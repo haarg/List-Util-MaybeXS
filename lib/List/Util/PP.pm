@@ -18,9 +18,7 @@ $VERSION = eval $VERSION;
 
 sub reduce (&@) {
   my $code = shift;
-  require Scalar::Util;
-  my $type = Scalar::Util::reftype($code);
-  unless($type and $type eq 'CODE') {
+  unless ( ref $code && eval { \&$code } ) {
     require Carp;
     Carp::croak("Not a subroutine reference");
   }
@@ -42,17 +40,14 @@ sub reduce (&@) {
 }
 
 sub first (&@) {
-  my $code = shift;
-  require Scalar::Util;
-  my $type = Scalar::Util::reftype($code);
-  unless($type and $type eq 'CODE') {
+  my $f = shift;
+  unless ( ref $f && eval { \&$f } ) {
     require Carp;
     Carp::croak("Not a subroutine reference");
   }
 
-  foreach (@_) {
-    return $_ if &{$code}();
-  }
+  $f->() and return $_
+    foreach @_;
 
   undef;
 }
