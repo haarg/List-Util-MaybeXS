@@ -8,7 +8,7 @@ package List::Util::PP;
 
 use strict;
 use warnings;
-use vars qw(@ISA @EXPORT $VERSION $a $b);
+use vars qw(@ISA @EXPORT $VERSION);
 require Exporter;
 
 @ISA     = qw(Exporter);
@@ -27,8 +27,6 @@ sub reduce (&@) {
   no strict 'refs';
 
   return shift unless @_ > 1;
-
-  use vars qw($a $b);
 
   my $caller = caller;
   local(*{$caller."::a"}) = \my $a;
@@ -59,16 +57,44 @@ sub first (&@) {
   undef;
 }
 
+sub sum (@) {
+  return undef unless @_;
+  my $s = 0;
+  $s += $_ foreach @_;
+  return $s;
+}
 
-sub sum (@) { reduce { $a + $b } @_ }
+sub min (@) {
+  return undef unless @_;
+  my $min = shift;
+  $_ < $min and $min = $_
+    foreach @_;
+  return $min;
+}
 
-sub min (@) { reduce { $a < $b ? $a : $b } @_ }
+sub max (@) {
+  return undef unless @_;
+  my $max = shift;
+  $_ > $max and $max = $_
+    foreach @_;
+  return $max;
+}
 
-sub max (@) { reduce { $a > $b ? $a : $b } @_ }
+sub minstr (@) {
+  return undef unless @_;
+  my $min = shift;
+  $_ lt $min and $min = $_
+    foreach @_;
+  return $min;
+}
 
-sub minstr (@) { reduce { $a lt $b ? $a : $b } @_ }
-
-sub maxstr (@) { reduce { $a gt $b ? $a : $b } @_ }
+sub maxstr (@) {
+  return undef unless @_;
+  my $max = shift;
+  $_ gt $max and $max = $_
+    foreach @_;
+  return $max;
+}
 
 sub shuffle (@) {
   my @a=\(@_);
