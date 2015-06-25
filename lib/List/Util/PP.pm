@@ -192,12 +192,13 @@ sub pairmap (&@) {
   }
 
   my $pkg = caller;
+  no strict 'refs';
+  my $glob_a = \*{"${pkg}::a"};
+  my $glob_b = \*{"${pkg}::b"};
 
   return
     map {
-      no strict 'refs';
-      local *{"${pkg}::a"} = \($_[$_]);
-      local *{"${pkg}::b"} = \($_[$_+1]);
+      local (*$glob_a, *$glob_b) = \( @_[$_,$_+1] );
       $f->();
     }
     map $_*2,
@@ -211,12 +212,13 @@ sub pairgrep (&@) {
   }
 
   my $pkg = caller;
+  no strict 'refs';
+  my $glob_a = \*{"${pkg}::a"};
+  my $glob_b = \*{"${pkg}::b"};
 
   return
     map {
-      no strict 'refs';
-      local *{"${pkg}::a"} = \($_[$_]);
-      local *{"${pkg}::b"} = \($_[$_+1]);
+      local (*$glob_a, *$glob_b) = \( @_[$_,$_+1] );
       $f->() ? (wantarray ? @_[$_,$_+1] : 1) : ();
     }
     map $_*2,
@@ -230,10 +232,12 @@ sub pairfirst (&@) {
   }
 
   my $pkg = caller;
+  no strict 'refs';
+  my $glob_a = \*{"${pkg}::a"};
+  my $glob_b = \*{"${pkg}::b"};
+
   foreach my $i (map $_*2, 0 .. int($#_/2)) {
-    no strict 'refs';
-    local *{"${pkg}::a"} = \($_[$i]);
-    local *{"${pkg}::b"} = \($_[$i+1]);
+    local (*$glob_a, *$glob_b) = \( @_[$i,$i+1] );
     return wantarray ? @_[$i,$i+1] : 1
       if $f->();
   }
