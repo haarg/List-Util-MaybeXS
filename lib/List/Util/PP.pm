@@ -25,23 +25,24 @@ sub import {
 }
 
 sub reduce (&@) {
-  my $code = shift;
-  unless ( ref $code && eval { \&$code } ) {
+  my $f = shift;
+  unless ( ref $f && eval { \&$f } ) {
     require Carp;
     Carp::croak("Not a subroutine reference");
   }
-  no strict 'refs';
 
   return shift unless @_ > 1;
 
-  my $caller = caller;
-  local(*{$caller."::a"}) = \my $a;
-  local(*{$caller."::b"}) = \my $b;
+  my $pkg = caller;
+  my $a = shift;
 
-  $a = shift;
-  foreach (@_) {
-    $b = $_;
-    $a = &{$code}();
+  no strict 'refs';
+  local *{"${pkg}::a"} = \$a;
+  my $glob_b = \*{"${pkg}::b"};
+
+  foreach my $b (@_) {
+    local *$glob_b = \$b;
+    $a = $f->();
   }
 
   $a;
