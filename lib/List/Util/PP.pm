@@ -1,20 +1,12 @@
-# List::Util::PP.pm
-#
-# Copyright (c) 1997-2009 Graham Barr <gbarr@pobox.com>. All rights reserved.
-# This program is free software; you can redistribute it and/or
-# modify it under the same terms as Perl itself.
-
 package List::Util::PP;
-
 use strict;
 use warnings;
-use vars qw(@ISA @EXPORT $VERSION);
-require Exporter;
+use Exporter ();
 
-@ISA     = qw(Exporter);
-@EXPORT  = qw(first min max minstr maxstr reduce sum shuffle);
-$VERSION = "1.23";
-$VERSION = eval $VERSION;
+our $VERSION = "1.47";
+$VERSION =~ tr/_//d;
+
+our @EXPORT_OK = qw(first min max minstr maxstr reduce sum shuffle);
 
 sub import {
   my $pkg = caller;
