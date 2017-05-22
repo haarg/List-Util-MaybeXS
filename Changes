@@ -1,0 +1,4 @@
+Revision history for List::Util::MaybeXS
+
+  - initial version
+  - tests based on Scalar-List-Utils-1.47
