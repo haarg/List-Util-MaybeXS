@@ -16,6 +16,18 @@ require Exporter;
 $VERSION = "1.23";
 $VERSION = eval $VERSION;
 
+sub import {
+  my $pkg = caller;
+
+  # (RT88848) Touch the caller's $a and $b, to avoid the warning of
+  #   Name "main::a" used only once: possible typo" warning
+  no strict 'refs';
+  ${"${pkg}::a"} = ${"${pkg}::a"};
+  ${"${pkg}::b"} = ${"${pkg}::b"};
+
+  goto &Exporter::import;
+}
+
 sub reduce (&@) {
   my $code = shift;
   unless ( ref $code && eval { \&$code } ) {
