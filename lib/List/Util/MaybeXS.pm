@@ -29,8 +29,10 @@ BEGIN {
     List::Util->import(@import);
     delete @need{@import};
   }
-  die "Missing implementations of ".join(', ', sort keys %need)
-    if keys %need;
+  if (keys %need) {
+    require List::Util::PP;
+    List::Util::PP->import(keys %need);
+  }
 }
 
 1;
