@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 use 5.006;
+use lib 'inc';
+use ExtUtils::HasCompiler qw(can_compile_loadable_object);
 
 my %META = (
   name => 'List::Util::MaybeXS',
@@ -18,6 +20,9 @@ my %META = (
     },
     runtime => {
       requires => {
+      },
+      suggests => {
+        'List::Util' => 1.47,
       },
     },
     develop   => {
@@ -43,7 +48,32 @@ my %META = (
   },
 );
 
-my %MM_ARGS = ();
+my $want_lu = $META{prereqs}{runtime}{suggests}{'List::Util'};
+my %MM_ARGS = (
+  PREREQ_PM => {
+    (
+      (
+        eval { require List::Util; List::Util->VERSION($want_lu) }
+        or (
+          !parse_args()->{PUREPERL_ONLY}
+          and can_compile_loadable_object(quiet => 1)
+        )
+      ) ? ('List::Util' => $want_lu) : ()
+    ),
+  },
+);
+
+sub parse_args {
+  require ExtUtils::MakeMaker;
+  require Text::ParseWords;
+  # copied from EUMM
+  ExtUtils::MakeMaker::parse_args(
+    my $tmp = {},
+    Text::ParseWords::shellwords($ENV{PERL_MM_OPT} || ''),
+    @ARGV,
+  );
+  return $tmp->{ARGS} || {};
+}
 
 ## BOILERPLATE ###############################################################
 require ExtUtils::MakeMaker;
