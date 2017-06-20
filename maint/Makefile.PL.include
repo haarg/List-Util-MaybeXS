@@ -4,4 +4,6 @@ use Distar;
 
 author 'haarg - Graham Knop (cpan:HAARG) <haarg@haarg.org>';
 
+manifest_include inc => '.pm';
+
 1;
