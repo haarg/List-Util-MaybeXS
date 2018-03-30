@@ -3,13 +3,14 @@ use strict;
 use warnings;
 use Exporter ();
 
-our $VERSION = "1.47";
+our $VERSION = "1.50";
 $VERSION =~ tr/_//d;
 
-our @EXPORT_OK  = qw(
+our @EXPORT_OK = qw(
   first min max minstr maxstr reduce sum shuffle
   all any none notall product sum0 uniq uniqnum uniqstr
   pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
+  head tail
 );
 
 sub import {
@@ -275,6 +276,20 @@ sub uniqstr (@) {
   @uniq;
 }
 
+sub head ($@) {
+  my $size = shift;
+  return @_
+    if $size > @_;
+  @_[ 0 .. ( $size >= 0 ? $size - 1 : $#_ + $size ) ];
+}
+
+sub tail ($@) {
+  my $size = shift;
+  return @_
+    if $size > @_;
+  @_[ ( $size >= 0 ? ($#_ - ($size-1) ) : 0 - $size ) .. $#_ ];
+}
+
 1;
 
 __END__
@@ -293,6 +308,8 @@ List::Util::PP - Pure-perl implementations of List::Util subroutines
       pairs pairkeys pairvalues pairfirst pairgrep pairmap
 
       shuffle
+
+      head tail
     );
 
 =head1 DESCRIPTION
@@ -356,6 +373,10 @@ this module otherwise.
 =item L<pairgrep|List::Util/pairgrep>
 
 =item L<pairfirst|List::Util/pairfirst>
+
+=item L<head|List::Util/head>
+
+=item L<tail|List::Util/tail>
 
 =back
 

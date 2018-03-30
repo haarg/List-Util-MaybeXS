@@ -4,7 +4,7 @@ use warnings;
 
 use Exporter (); BEGIN { *import = \&Exporter::import }
 
-our $VERSION = '1.47';
+our $VERSION = '1.50';
 $VERSION =~ tr/_//d;
 
 our @EXPORT_OK;
@@ -14,6 +14,7 @@ BEGIN {
     product reduce sum sum0
     shuffle uniq uniqnum uniqstr
     pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
+    head tail
   );
 }
 
@@ -109,6 +110,10 @@ over using L<List::Util> directly.
 =item L<pairgrep|List::Util/pairgrep>
 
 =item L<pairfirst|List::Util/pairfirst>
+
+=item L<head|List::Util/head>
+
+=item L<tail|List::Util/tail>
 
 =back
 
