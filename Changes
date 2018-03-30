@@ -1,4 +1,5 @@
 Revision history for List-Util-MaybeXS
 
+1.50 - 2018-03-30
   - initial version
   - tests based on Scalar-List-Utils-1.50
