@@ -285,7 +285,7 @@ List::Util::PP - Pure-perl implementations of List::Util subroutines
 
 =head1 SYNOPSIS
 
-    use List::Util qw(
+    use List::Util::PP qw(
       reduce any all none notall first
 
       max maxstr min minstr product sum sum0
@@ -301,9 +301,9 @@ C<List::Util::PP> contains pure-perl implementations of all of the functions
 documented in L<List::Util>.  This is meant for when a compiler is not
 available, or when packaging for reuse without without installing modules.
 
-Generally, L<List::Util> should be used instead, which will automatically use
-the faster XS implementation when possible, but fall back on this module
-otherwise.
+Generally, L<List::Util::MaybeXS> should be used instead, which will
+automatically use the faster XS implementation when possible, but fall back on
+this module otherwise.
 
 =head1 FUNCTIONS
 
