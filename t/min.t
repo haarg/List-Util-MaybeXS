@@ -78,3 +78,5 @@ is($v, 1, 'bigint and normal int');
         ok( $max == $size-1, "max(\$#list, 0) == $size-1");
     }
 }
+
+1;
