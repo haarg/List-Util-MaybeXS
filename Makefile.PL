@@ -28,6 +28,8 @@ my %META = (
     develop   => {
       requires => {
         'List::Util' => 1.47,
+        'Test::Pod::Coverage' => 1.04,
+        'Test::Pod' => 1.14,
       },
     },
   },
