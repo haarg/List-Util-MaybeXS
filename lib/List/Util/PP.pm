@@ -305,6 +305,60 @@ Generally, L<List::Util> should be used instead, which will automatically use
 the faster XS implementation when possible, but fall back on this module
 otherwise.
 
+=head1 FUNCTIONS
+
+=over
+
+=item L<all|List::Util/all>
+
+=item L<any|List::Util/any>
+
+=item L<first|List::Util/first>
+
+=item L<min|List::Util/min>
+
+=item L<max|List::Util/max>
+
+=item L<minstr|List::Util/minstr>
+
+=item L<maxstr|List::Util/maxstr>
+
+=item L<none|List::Util/none>
+
+=item L<notall|List::Util/notall>
+
+=item L<product|List::Util/product>
+
+=item L<reduce|List::Util/reduce>
+
+=item L<sum|List::Util/sum>
+
+=item L<sum0|List::Util/sum0>
+
+=item L<shuffle|List::Util/shuffle>
+
+=item L<uniq|List::Util/uniq>
+
+=item L<uniqnum|List::Util/uniqnum>
+
+=item L<uniqstr|List::Util/uniqstr>
+
+=item L<pairs|List::Util/pairs>
+
+=item L<unpairs|List::Util/unpairs>
+
+=item L<pairkeys|List::Util/pairkeys>
+
+=item L<pairvalues|List::Util/pairvalues>
+
+=item L<pairmap|List::Util/pairmap>
+
+=item L<pairgrep|List::Util/pairgrep>
+
+=item L<pairfirst|List::Util/pairfirst>
+
+=back
+
 =head1 SUPPORT
 
 See L<List::Util::MaybeXS> for support and contact information.
