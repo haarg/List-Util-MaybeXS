@@ -35,8 +35,8 @@ my %META = (
   },
   resources => {
     repository => {
-      url => 'https://github.com/p5sagit/List-Util-MaybeXS.git',
-      web => 'https://github.com/p5sagit/List-Util-MaybeXS',
+      url => 'https://github.com/haarg/List-Util-MaybeXS.git',
+      web => 'https://github.com/haarg/List-Util-MaybeXS',
       type => 'git',
     },
     bugtracker => {
