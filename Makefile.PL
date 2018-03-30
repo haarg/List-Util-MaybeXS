@@ -5,7 +5,7 @@ use lib 'inc';
 use ExtUtils::HasCompiler qw(can_compile_loadable_object);
 
 my %META = (
-  name => 'List::Util::MaybeXS',
+  name => 'List-Util-MaybeXS',
   license => 'perl_5',
   prereqs => {
     configure => { requires => {
