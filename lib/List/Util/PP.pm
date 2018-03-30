@@ -248,14 +248,14 @@ sub pairfirst (&@) {
 sub List::Util::PP::_Pair::key   { $_[0][0] }
 sub List::Util::PP::_Pair::value { $_[0][1] }
 
-sub uniq {
+sub uniq (@) {
   my %seen;
   my $undef;
   my @uniq = grep defined($_) ? !$seen{$_}++ : !$undef++, @_;
   @uniq;
 }
 
-sub uniqnum {
+sub uniqnum (@) {
   my %seen;
   my @uniq =
     grep !$seen{(eval { pack "J", $_ }||'') . pack "F", $_}++,
@@ -265,7 +265,7 @@ sub uniqnum {
   @uniq;
 }
 
-sub uniqstr {
+sub uniqstr (@) {
   my %seen;
   my @uniq =
     grep !$seen{$_}++,
