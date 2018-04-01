@@ -30,6 +30,7 @@ my %META = (
         'List::Util' => '1.50',
         'Test::Pod::Coverage' => '1.04',
         'Test::Pod' => '1.14',
+        'Test::More' => '0.88',
       },
     },
   },
