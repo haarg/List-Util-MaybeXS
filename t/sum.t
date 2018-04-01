@@ -4,7 +4,7 @@ use warnings;
 use Test::More tests => 17;
 
 use Config;
-use List::Util::MaybeXS qw(sum);
+use List::Util::PP qw(sum);
 
 my $v = sum;
 is( $v, undef, 'no args');

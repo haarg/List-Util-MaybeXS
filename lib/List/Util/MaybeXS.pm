@@ -22,7 +22,7 @@ BEGIN {
   my %need;
   @need{@EXPORT_OK} = ();
   local $@;
-  if (!$ENV{PERL_LIST_UTIL_MAYBEXS_NO_XS} && eval { require List::Util; 1 }) {
+  if (eval { require List::Util; 1 }) {
     my @import = grep defined &{"List::Util::$_"}, keys %need;
     if ( ! eval { List::Util->VERSION(1.45) } ) {
       @import = grep !/^uniq/, @import;

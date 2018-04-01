@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More tests => 22;
-use List::Util::MaybeXS qw(min);
+use List::Util::PP qw(min);
 
 my $v;
 
@@ -68,15 +68,13 @@ is($v, 1, 'bigint and normal int');
     for my $size (10, 20, 10, 30) {
         @list = ( 1 ) x $size;
 
-        my $sum= List::Util::MaybeXS::sum( 0, $#list );
+        my $sum= List::Util::PP::sum( 0, $#list );
         ok( $sum == $size-1, "sum(\$#list, 0) == $size-1");
 
-        my $min= List::Util::MaybeXS::min( 15, $#list );
+        my $min= List::Util::PP::min( 15, $#list );
         ok( $min <= 15, "min(15,$size)" );
 
-        my $max= List::Util::MaybeXS::max( 0, $#list );
+        my $max= List::Util::PP::max( 0, $#list );
         ok( $max == $size-1, "max(\$#list, 0) == $size-1");
     }
 }
-
-1;

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use List::Util::MaybeXS qw(head tail);
+use List::Util::PP qw(head tail);
 use Test::More;
 plan tests => 42;
 

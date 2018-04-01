@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use List::Util::MaybeXS qw(first);
+use List::Util::PP qw(first);
 use Test::More;
 plan tests => 22;
 my $v;
@@ -44,7 +44,7 @@ is($v, 12, 'return from loop');
 
 # Does it work from another package?
 { package Foo;
-  ::is(List::Util::MaybeXS::first(sub{$_>4},(1..4,24)), 24, 'other package');
+  ::is(List::Util::PP::first(sub{$_>4},(1..4,24)), 24, 'other package');
 }
 
 # Can we undefine a first sub while it's running?

@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More tests => 26;
-use List::Util::MaybeXS qw(pairgrep pairfirst pairmap pairs unpairs pairkeys pairvalues);
+use List::Util::PP qw(pairgrep pairfirst pairmap pairs unpairs pairkeys pairvalues);
 
 no warnings 'misc'; # avoid "Odd number of elements" warnings most of the time
 

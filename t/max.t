@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Test::More tests => 10;
-use List::Util::MaybeXS qw(max);
+use List::Util::PP qw(max);
 
 my $v;
 

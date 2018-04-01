@@ -4,7 +4,7 @@ use warnings;
 use Test::More tests => 25;
 
 use Config;
-use List::Util::MaybeXS qw(product);
+use List::Util::PP qw(product);
 
 my $v = product;
 is( $v, 1, 'no args');

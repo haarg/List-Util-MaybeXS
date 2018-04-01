@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use List::Util::MaybeXS qw(reduce);
+use List::Util::PP qw(reduce);
 use Test::More tests => 1;
 
 my $ret = "original";
