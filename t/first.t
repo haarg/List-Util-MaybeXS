@@ -6,7 +6,7 @@ use Test::More;
 plan tests => 22;
 my $v;
 
-ok(defined &first,	'defined');
+ok(defined &first, 'defined');
 
 $v = first { 8 == ($_ - 1) } 9,4,5,6;
 is($v, 9, 'one more than 8');
@@ -18,7 +18,7 @@ $v = first { 0 };
 is($v, undef, 'no args');
 
 $v = first { $_->[1] le "e" and "e" le $_->[2] }
-		[qw(a b c)], [qw(d e f)], [qw(g h i)];
+    [qw(a b c)], [qw(d e f)], [qw(g h i)];
 is_deeply($v, [qw(d e f)], 'reference args');
 
 # Check that eval{} inside the block works correctly
