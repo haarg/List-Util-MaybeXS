@@ -1,4 +1,4 @@
-#!perl -T
+#!perl
 
 use Test::More;
 use Test::Pod 1.14;
