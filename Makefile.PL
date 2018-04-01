@@ -15,21 +15,21 @@ my %META = (
     } },
     test => {
       requires => {
-        'Test::More'  => 0,
+        'Test::More' => 0,
       },
     },
     runtime => {
       requires => {
       },
       suggests => {
-        'List::Util' => 1.50,
+        'List::Util' => '1.50',
       },
     },
     develop   => {
       requires => {
-        'List::Util' => 1.50,
-        'Test::Pod::Coverage' => 1.04,
-        'Test::Pod' => 1.14,
+        'List::Util' => '1.50',
+        'Test::Pod::Coverage' => '1.04',
+        'Test::Pod' => '1.14',
       },
     },
   },
