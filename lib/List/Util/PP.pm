@@ -10,7 +10,7 @@ our @EXPORT_OK = qw(
   first min max minstr maxstr reduce sum shuffle
   all any none notall product sum0 uniq uniqnum uniqstr
   pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
-  head tail
+  head tail mapacc
 );
 
 sub import {
@@ -288,6 +288,29 @@ sub tail ($@) {
   return @_
     if $size > @_;
   @_[ ( $size >= 0 ? ($#_ - ($size-1) ) : 0 - $size ) .. $#_ ];
+}
+
+sub mapacc(&@) {
+  my $f = shift;
+  unless ( ref $f && eval { \&$f } ) {
+    require Carp;
+    Carp::croak("Not a subroutine reference");
+  }
+
+  my $pkg = caller;
+  my $a = shift;
+
+  no strict 'refs';
+  local *{"${pkg}::a"} = \$a;
+  my $glob_b = \*{"${pkg}::b"};
+
+  my @r;
+  foreach my $b (@_) {
+      local *$glob_b = \$b;
+      push @r, $a = $f->();
+  }
+
+  @r;
 }
 
 1;
