@@ -27,7 +27,7 @@ sub import {
 
 sub reduce (&@) {
   my $f = shift;
-  unless ( ref $f && eval { \&$f } ) {
+  unless ( length ref $f && eval { $f = \&$f; 1 } ) {
     require Carp;
     Carp::croak("Not a subroutine reference");
   }
@@ -51,7 +51,7 @@ sub reduce (&@) {
 
 sub first (&@) {
   my $f = shift;
-  unless ( ref $f && eval { \&$f } ) {
+  unless ( length ref $f && eval { $f = \&$f; 1 } ) {
     require Carp;
     Carp::croak("Not a subroutine reference");
   }
