@@ -20,7 +20,11 @@ is_deeply [sort @List::Util::PP::EXPORT_OK], [sort @List::Util::EXPORT_OK],
 is_deeply \%List::Util::PP::EXPORT_TAGS, \%List::Util::EXPORT_TAGS,
   'same PP export tags as List::Util';
 
-for my $sub (sort @List::Util::PP::EXPORT_OK) {
+for my $sub (List::Util::PP::uniq(sort(
+    @List::Util::PP::EXPORT,
+    @List::Util::PP::EXPORT_OK,
+    (map @$_, values %List::Util::PP::EXPORT_TAGS),
+))) {
   my ($pp, $xs) = do { no strict 'refs'; map \&{$_.'::'.$sub}, qw(List::Util::PP List::Util); };
   is prototype $pp, prototype $xs,
     "$sub prototype is correct";
