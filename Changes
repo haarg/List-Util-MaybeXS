@@ -1,5 +1,6 @@
 Revision history for List-Util-MaybeXS
 
+1.500001 - 2018-04-02
   - only test against PP module, as testing MaybeXS is redundant
   - added test to ensure List::Util::MaybeXS and List::Util::PP have matching
     exports
