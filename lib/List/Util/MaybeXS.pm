@@ -1,10 +1,9 @@
 package List::Util::MaybeXS;
 use strict;
 use warnings;
-
 use Exporter (); BEGIN { *import = \&Exporter::import }
 
-our $VERSION = '1.50';
+our $VERSION = '1.500001';
 $VERSION =~ tr/_//d;
 
 our @EXPORT_OK;
