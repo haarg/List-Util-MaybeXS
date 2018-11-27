@@ -49,17 +49,18 @@ sub reduce (&@) {
   $a;
 }
 
-sub first (&@) {
+sub first (&@) :lvalue {
   my $f = shift;
   unless ( length ref $f && eval { $f = \&$f; 1 } ) {
     require Carp;
     Carp::croak("Not a subroutine reference");
   }
 
-  $f->() and return $_
+  my $r = \undef;
+  $f->() and ($r = \$_, last)
     foreach @_;
 
-  undef;
+  $$r;
 }
 
 sub sum (@) {
@@ -69,42 +70,47 @@ sub sum (@) {
   return $s;
 }
 
-sub min (@) {
+sub min (@) :lvalue {
   return undef unless @_;
-  my $min = shift;
-  $_ < $min and $min = $_
+  my $min = \$_[0];
+  shift;
+  $_ < $$min and $min = \$_
     foreach @_;
-  return $min;
+  $$min;
 }
 
-sub max (@) {
+sub max (@) :lvalue {
   return undef unless @_;
-  my $max = shift;
-  $_ > $max and $max = $_
+  my $max = \$_[0];
+  shift;
+  $_ > $$max and $max = \$_
     foreach @_;
-  return $max;
+  $$max;
 }
 
-sub minstr (@) {
+sub minstr (@) :lvalue {
   return undef unless @_;
-  my $min = shift;
-  $_ lt $min and $min = $_
+  my $min = \$_[0];
+  shift;
+  $_ lt $$min and $min = \$_
     foreach @_;
-  return $min;
+  $$min;
 }
 
-sub maxstr (@) {
+sub maxstr (@) :lvalue {
   return undef unless @_;
-  my $max = shift;
-  $_ gt $max and $max = $_
+  my $max = \$_[0];
+  shift;
+  $_ gt $$max and $max = \$_
     foreach @_;
-  return $max;
+  $$max;
 }
 
-sub shuffle (@) {
+sub shuffle (@) :lvalue {
   my @a=\(@_);
   my $n;
   my $i=@_;
+
   map {
     $n = rand($i--);
     (${$a[$n]}, $a[$n] = $a[$i])[0];
@@ -176,38 +182,39 @@ sub pairs (@) {
     warnings::warnif('misc', 'Odd number of elements in pairs');
   }
 
-  return
-    map { bless [ @_[$_, $_ + 1] ], 'List::Util::PP::_Pair' }
+  map { bless [ @_[$_, $_ + 1] ], 'List::Util::PP::_Pair' }
     map $_*2,
     0 .. int($#_/2);
 }
 
-sub unpairs (@) {
+sub unpairs (@) :lvalue {
   map @{$_}[0,1], @_;
 }
 
-sub pairkeys (@) {
+sub pairkeys (@) :lvalue {
   if (@_ % 2) {
     warnings::warnif('misc', 'Odd number of elements in pairkeys');
   }
 
-  return
-    map $_[$_*2],
-    0 .. int($#_/2);
+  @_[
+    map $_*2,
+    0 .. int($#_/2)
+  ];
 }
 
-sub pairvalues (@) {
+sub pairvalues (@) :lvalue {
   if (@_ % 2) {
     require Carp;
     warnings::warnif('misc', 'Odd number of elements in pairvalues');
   }
 
-  return
-    map $_[$_*2 + 1],
-    0 .. int($#_/2);
+  @_[
+    map $_*2+1,
+    0 .. int($#_/2)
+  ];
 }
 
-sub pairmap (&@) {
+sub pairmap (&@) :lvalue {
   my $f = shift;
   unless ( length ref $f && eval { $f = \&$f; 1 } ) {
     require Carp;
@@ -223,16 +230,15 @@ sub pairmap (&@) {
   my $glob_a = \*{"${pkg}::a"};
   my $glob_b = \*{"${pkg}::b"};
 
-  return
-    map {
-      local (*$glob_a, *$glob_b) = \( @_[$_,$_+1] );
-      $f->();
-    }
+  map {
+    local (*$glob_a, *$glob_b) = \( @_[$_,$_+1] );
+    $f->();
+  }
     map $_*2,
     0 .. int($#_/2);
 }
 
-sub pairgrep (&@) {
+sub pairgrep (&@) :lvalue {
   my $f = shift;
   unless ( length ref $f && eval { $f = \&$f; 1 } ) {
     require Carp;
@@ -248,16 +254,19 @@ sub pairgrep (&@) {
   my $glob_a = \*{"${pkg}::a"};
   my $glob_b = \*{"${pkg}::b"};
 
-  return
-    map {
+  my @i =
+    map +($_,$_+1),
+    grep {
       local (*$glob_a, *$glob_b) = \( @_[$_,$_+1] );
-      $f->() ? (wantarray ? @_[$_,$_+1] : 1) : ();
+      $f->();
     }
     map $_*2,
     0 .. int ($#_/2);
+
+  wantarray ? @_[@i] : @i/2;
 }
 
-sub pairfirst (&@) {
+sub pairfirst (&@) :lvalue {
   my $f = shift;
   unless ( length ref $f && eval { $f = \&$f; 1 } ) {
     require Carp;
@@ -273,56 +282,55 @@ sub pairfirst (&@) {
   my $glob_a = \*{"${pkg}::a"};
   my $glob_b = \*{"${pkg}::b"};
 
+  my $r;
   foreach my $i (map $_*2, 0 .. int($#_/2)) {
     local (*$glob_a, *$glob_b) = \( @_[$i,$i+1] );
-    return wantarray ? @_[$i,$i+1] : 1
-      if $f->();
+    $f->() and $r = $i, last;
   }
-  return ();
+  $r ? (wantarray ? @_[$r,$r+1] : 1) : ();
 }
 
 sub List::Util::PP::_Pair::key   { $_[0][0] }
 sub List::Util::PP::_Pair::value { $_[0][1] }
 
-sub uniq (@) {
+sub uniq (@) :lvalue {
   my %seen;
   my $undef;
-  my @uniq = grep defined($_) ? !$seen{$_}++ : !$undef++, @_;
-  @uniq;
+  grep defined($_) ? !$seen{$_}++ : !$undef++, @_;
 }
 
-sub uniqnum (@) {
+sub uniqnum (@) :lvalue {
   my %seen;
-  my @uniq =
-    grep !$seen{(eval { pack "J", $_ }||'') . pack "F", $_}++,
+
+  grep !$seen{(eval { pack "J", $_ }||'') . pack "F", $_}++,
     map +(defined($_) ? $_
       : do { warnings::warnif('uninitialized', 'Use of uninitialized value in subroutine entry'); 0 }),
     @_;
-  @uniq;
 }
 
-sub uniqstr (@) {
+sub uniqstr (@) :lvalue {
   my %seen;
-  my @uniq =
-    grep !$seen{$_}++,
+
+  grep !$seen{$_}++,
     map +(defined($_) ? $_
       : do { warnings::warnif('uninitialized', 'Use of uninitialized value in subroutine entry'); '' }),
     @_;
-  @uniq;
 }
 
-sub head ($@) {
+sub head ($@) :lvalue {
   my $size = shift;
-  return @_
-    if $size > @_;
-  @_[ 0 .. ( $size >= 0 ? $size - 1 : $#_ + $size ) ];
+
+  $size > @_
+    ? @_
+    : @_[ 0 .. ( $size >= 0 ? $size - 1 : $#_ + $size ) ];
 }
 
-sub tail ($@) {
+sub tail ($@) :lvalue {
   my $size = shift;
-  return @_
-    if $size > @_;
-  @_[ ( $size >= 0 ? ($#_ - ($size-1) ) : 0 - $size ) .. $#_ ];
+
+  $size > @_
+    ? @_
+    : @_[ ( $size >= 0 ? ($#_ - ($size-1) ) : 0 - $size ) .. $#_ ];
 }
 
 1;
