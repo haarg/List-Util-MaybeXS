@@ -10,7 +10,7 @@ our @EXPORT_OK = qw(
   first min max minstr maxstr reduce sum shuffle
   all any none notall product sum0 uniq uniqnum uniqstr
   pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
-  head tail
+  head tail zip
 );
 
 sub import {
@@ -325,6 +325,11 @@ sub tail ($@) {
   @_[ ( $size >= 0 ? ($#_ - ($size-1) ) : 0 - $size ) .. $#_ ];
 }
 
+sub zip (@) {
+  my $max = max(map $#$_, @_) || -1;
+  map { my $i = $_; map $_->[$i], @_ } 0 .. $max;
+}
+
 1;
 
 __END__
@@ -345,6 +350,8 @@ List::Util::PP - Pure-perl implementations of List::Util subroutines
       shuffle
 
       head tail
+
+      zip
     );
 
 =head1 DESCRIPTION
@@ -412,6 +419,8 @@ this module otherwise.
 =item L<head|List::Util/head>
 
 =item L<tail|List::Util/tail>
+
+=item L<zip|List::Util/zip>
 
 =back
 

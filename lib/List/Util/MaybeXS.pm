@@ -13,7 +13,7 @@ BEGIN {
     product reduce sum sum0
     shuffle uniq uniqnum uniqstr
     pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
-    head tail
+    head tail zip
   );
 }
 
@@ -113,6 +113,8 @@ over using L<List::Util> directly.
 =item L<head|List::Util/head>
 
 =item L<tail|List::Util/tail>
+
+=item L<zip|List::Util/zip>
 
 =back
 
