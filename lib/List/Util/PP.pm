@@ -283,6 +283,7 @@ sub pairfirst (&@) {
 
 sub List::Util::PP::_Pair::key   { $_[0][0] }
 sub List::Util::PP::_Pair::value { $_[0][1] }
+sub List::Util::PP::_Pair::TO_JSON { [ @{$_[0]} ] }
 
 sub uniq (@) {
   my %seen;
