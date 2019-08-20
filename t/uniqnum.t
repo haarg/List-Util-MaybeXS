@@ -135,9 +135,14 @@ is 0+@ppuniq, 0+@uniq,
 
 for my $i ( 0 .. $#uniq ) {
   my ($got, $want) = ($ppuniq[$i], $uniq[$i]);
-  if ($want != $want) {
-    cmp_ok $got, '!=', $got,
-      "Found correct $want in uniqnum output";
+  if (!defined $got) {
+    fail "Found correct $want in uniqnum output"
+      or diag "Wanted : $want\nGot    : [undef]";
+  }
+  elsif ($want != $want) {
+    ok $got != $got,
+      "Found correct $want in uniqnum output"
+      or diag "Got: $got";
   }
   else {
     cmp_ok $want, '==', $got,
