@@ -295,7 +295,14 @@ sub uniq (@) {
 sub uniqnum (@) {
   my %seen;
   my @uniq =
-    grep !$seen{ ($_ == $_ ? do { local $@; eval { pack 'JF', $_, $_ } } : 0) || sprintf('%f', $_) }++,
+    grep {
+      my ($NV) = unpack 'F', pack 'F', $_;
+      !$seen{
+        (!($NV != $NV)
+          ? do { local $@; eval { pack 'JF', $_, $_ } } : 0
+        ) || sprintf('%f', $_)
+      }++;
+    }
     map +(defined($_) ? $_
       : do { warnings::warnif('uninitialized', 'Use of uninitialized value in subroutine entry'); 0 }),
     @_;
