@@ -127,8 +127,8 @@ sub accurate_uniqnum {
   return @uniq;
 }
 
-my @uniq = accurate_uniqnum(@numbers, @more_numbers);
-my @ppuniq = uniqnum(@numbers, @more_numbers);
+my @uniq = accurate_uniqnum(@numbers, @more_numbers, @numbers, @more_numbers);
+my @ppuniq = uniqnum(@numbers, @more_numbers, @numbers, @more_numbers);
 
 is 0+@ppuniq, 0+@uniq,
   'correct count of unique numbers';
