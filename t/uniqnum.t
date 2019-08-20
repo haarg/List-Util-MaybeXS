@@ -67,7 +67,7 @@ my @numbers = (
   $maxint,
   $maxint+1,
   $minint,
-  (INF_NAN_SUPPORT ? ( INF, -INF, NAN, -NAN ) : ()),
+  (INF_NAN_SUPPORT ? ( INF, -(INF), NAN, -(NAN) ) : ()),
 );
 
 my @more_numbers = map +(
