@@ -109,7 +109,7 @@ sub accurate_uniqnum {
       my ($iF) =        unpack 'F', pack 'F', $in;
 
       # Inf/NaN
-      if (!defined $uj || !defined $ij) {
+      if ($uniq != $uniq || $in != $in || !defined $uj || !defined $ij) {
         # some platforms may stringify NaN and -NaN differently, and others
         # will not, even if the internal representation is different.  We just
         # use the stringification for the identity, rather than trying to peek
