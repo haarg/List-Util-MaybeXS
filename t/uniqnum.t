@@ -98,7 +98,7 @@ sub accurate_uniqnum {
       # NV).  Values are considered equal if all parts are equal.  The values
       # will truncate in the same way if they don't fit in the requested size.
       #
-      # evals are needed to handle Inf and NaN, since they will die in
+      # evals are needed to handle Inf and NaN, since they may die in
       # int/uint conversions.
 
       my ($uj) = eval { unpack 'j', pack 'j', $uniq };
