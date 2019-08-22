@@ -298,9 +298,12 @@ sub uniqnum (@) {
     grep {
       my ($NV) = unpack 'F', pack 'F', $_;
       !$seen{
-        (!($NV != $NV)
-          ? do { local $@; eval { pack 'JF', $_, $_ } } : 0
-        ) || sprintf('%f', $_)
+        $NV == 0 ? 0 : (
+          (!($NV != $NV)
+            ? do { local $@; eval { pack 'JF', $_, $_ } }
+            : 0
+          ) || sprintf('%f', $_)
+        )
       }++;
     }
     map +(defined($_) ? $_
