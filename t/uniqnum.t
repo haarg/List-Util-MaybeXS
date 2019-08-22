@@ -25,7 +25,7 @@ BEGIN {
   (my $f = "$IMPL.pm") =~ s{::}{/}g;
   require $f;
   *uniqnum = \&{"${IMPL}::${sub}"};
-  note "Testing ${IMPL}::${sub}";
+  print "# Testing ${IMPL}::${sub}\n";
 }
 
 use constant INF => 9**9**9**9;
