@@ -11,6 +11,7 @@ our @EXPORT_OK = qw(
   all any none notall product sum0 uniq uniqnum uniqstr
   pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
   head tail
+  equalnum equalstr
 );
 
 sub import {
@@ -334,6 +335,26 @@ sub tail ($@) {
   return @_
     if $size > @_;
   @_[ ( $size >= 0 ? ($#_ - ($size-1) ) : 0 - $size ) .. $#_ ];
+}
+
+sub equalnum {
+  my $first = shift;
+  for my $other (@_) {
+    return 0 if @$first != @$other;
+    $first->[$_] == $other->[$_] or return 0
+      for 0 ..$#$first;
+  }
+  return 1;
+}
+
+sub equalstr {
+  my $first = shift;
+  for my $other (@_) {
+    return 0 if @$first != @$other;
+    $first->[$_] eq $other->[$_] or return 0
+      for 0 ..$#$first;
+  }
+  return 1;
 }
 
 1;
