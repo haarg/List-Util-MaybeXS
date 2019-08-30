@@ -88,6 +88,13 @@ my @more_numbers = map +(
   0+sprintf('%.'.($precision+1).'g', $_),
 ), @numbers;
 
+# some stringified forms may not be convertable back to numbers, such as
+# NaNs and Infs on some platforms and perl versions.
+@more_numbers = grep {
+  use warnings FATAL => 'all';
+  eval { my $number = $_ + 0; 1 }
+} @more_numbers;
+
 sub accurate_uniqnum {
   local $@;
   my @uniq;
