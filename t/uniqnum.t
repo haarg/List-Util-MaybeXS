@@ -81,18 +81,19 @@ my @numbers = (
 );
 
 my @more_numbers = map +(
-  0+sprintf('%.'.($precision-3).'g', $_),
-  0+sprintf('%.'.($precision-2).'g', $_),
-  0+sprintf('%.'.($precision-1).'g', $_),
-  0+sprintf('%.'.($precision  ).'g', $_),
-  0+sprintf('%.'.($precision+1).'g', $_),
+  sprintf('%.'.($precision-3).'g', $_),
+  sprintf('%.'.($precision-2).'g', $_),
+  sprintf('%.'.($precision-1).'g', $_),
+  sprintf('%.'.($precision  ).'g', $_),
+  sprintf('%.'.($precision+1).'g', $_),
 ), @numbers;
 
 # some stringified forms may not be convertable back to numbers, such as
 # NaNs and Infs on some platforms and perl versions.
-@more_numbers = grep {
+@more_numbers = map {;
   use warnings FATAL => 'all';
-  eval { my $number = $_ + 0; 1 }
+  my $number;
+  eval { $number = 0 + $_; 1 } ? $number : ();
 } @more_numbers;
 
 sub accurate_uniqnum {
