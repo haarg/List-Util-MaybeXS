@@ -4,29 +4,9 @@ use Test::More;
 
 use Config ();
 
-BEGIN {
-  my $IMPL = 'List::Util::PP';
-  my $sub = 'uniqnum';
-  if (@ARGV) {
-    my $impl = $ARGV[0];
-    if ($impl =~ /\A(?:List::Util|(?:List::Util::)?XS)\z/i) {
-      $IMPL = 'List::Util';
-    }
-    elsif ($impl =~ /\A(?:List::Util::)?PP\z/i) {
-      $IMPL = 'List::Util::PP';
-    }
-    elsif ($impl =~ /\A(\w+(?:::\w+)*)::(uniq(?:num)?)\z/) {
-      ($IMPL, $sub) = ($1, $2);
-    }
-    else {
-      die "Invalid implementation '$impl'!\n";
-    }
-  }
-  (my $f = "$IMPL.pm") =~ s{::}{/}g;
-  require $f;
-  *uniqnum = \&{"${IMPL}::${sub}"};
-  print "# Testing ${IMPL}::${sub}\n";
-}
+use constant MAXUINT => ~0;
+use constant MAXINT => ~0 >> 1;
+use constant MININT => -(~0 >> 1) - 1;
 
 use constant INF => 9**9**9**9;
 use constant NAN => 0*9**9**9**9;
@@ -35,71 +15,12 @@ use constant INF_NAN_SUPPORT => (
   and !(NAN == 0 || NAN == 0.1 || NAN + 0 == 0)
 );
 
-my $nvmantbits = $Config::Config{nvmantbits} || do {
-  my $nvsize = $Config::Config{nvsize} * 8;
-    $nvsize == 16  ? 11
-  : $nvsize == 32  ? 24
-  : $nvsize == 64  ? 53
-  : $nvsize == 80  ? 64
-  : $nvsize == 128 ? 113
-  : $nvsize == 256 ? 237
-                   : 237 # i dunno
-};
-my $precision = 2 + int( log(2)/log(10)*$nvmantbits );
-
-my $maxuint = ~0;
-my $maxint = ~0 >> 1;
-my $minint = -(~0 >> 1) - 1;
-
-my @numbers = (
-  -20 .. 20,
-  -0.0,
-  qw(00 01 .0 .1 0.0 0.00 00.00 0.10 0.101),
-  '0 but true',
-  '0e0',
-  (map +("1e$_", "-1e$_"), -50, -5, 0, 1, 5, 50),
-  (map 1 / $_, -10 .. -2, 2 .. 10),
-  (map +(1 / 9) * $_, -9 .. -1, 1 .. 9),
-  (map $_ x 100, 1 .. 9),
-  3.14159265358979323846264338327950288419716939937510,
-  2.71828182845904523536028747135266249775724709369995,
-  sqrt(2),
-  1.4142135623730951,
-  1.4142135623730954,
-  sqrt(3),
-  1.7320508075688772935274463415058722,
-  1.73205080756887729352744634150587224,
-  sqrt(5),
-  2.2360679774997896963,
-  2.23606797749978969634,
-  $maxuint,
-  $maxuint-1,
-  $maxint,
-  $maxint+1,
-  $minint,
-  (INF_NAN_SUPPORT ? ( INF, -(INF), NAN, -(NAN) ) : ()),
-);
-
-my @more_numbers = map +(
-  sprintf('%.'.($precision-3).'g', $_),
-  sprintf('%.'.($precision-2).'g', $_),
-  sprintf('%.'.($precision-1).'g', $_),
-  sprintf('%.'.($precision  ).'g', $_),
-  sprintf('%.'.($precision+1).'g', $_),
-), @numbers;
-
-# some stringified forms may not be convertable back to numbers, such as
-# NaNs and Infs on some platforms and perl versions.
-@more_numbers = map {;
-  use warnings FATAL => 'all';
-  my $number;
-  eval { $number = 0 + $_; 1 } ? $number : ();
-} @more_numbers;
-
-sub accurate_uniqnum {
-  local $@;
+sub iterate_uniqnum {
   my @uniq;
-  IN: for my $in (@_) {
+  sub {
+    my ($in) = @_;
+    local $@;
+    my $dupe;
     for my $uniq (@uniq) {
       # this can't do a simple == comparison, due to conflicts between
       # floating point and unsigned int comparisons.  In particular:
@@ -133,43 +54,148 @@ sub accurate_uniqnum {
         # use the stringification for the identity, rather than trying to peek
         # further into if the NaN is negative or has a payload.
         if ($uF eq $iF) {
-          next IN;
+          $dupe = 1;
+          last;
         }
       }
       elsif ($uj == $ij && $uJ == $iJ && $uF == $iF) {
-        next IN;
+        $dupe = 1;
+        last;
       }
     }
     push @uniq, $in;
-  }
-  return @uniq;
-}
-
-my @uniq = accurate_uniqnum(@numbers, @more_numbers, @numbers, @more_numbers);
-my @ppuniq = uniqnum(@numbers, @more_numbers, @numbers, @more_numbers);
-
-is 0+@ppuniq, 0+@uniq,
-  'correct count of unique numbers';
-
-for my $i ( 0 .. $#uniq ) {
-  my ($got, $want) = ($ppuniq[$i], $uniq[$i]);
-  if (!defined $got) {
-    fail "Found correct $want in uniqnum output"
-      or diag "Wanted : $want\nGot    : [undef]";
-  }
-  elsif ($want != $want) {
-    ok $got != $got,
-      "Found correct $want in uniqnum output"
-      or diag "Got: $got";
-  }
-  else {
-    cmp_ok $want, '==', $got,
-      "Found correct $want in uniqnum output";
+    return !$dupe;
   }
 }
-for my $i ( @uniq .. $#ppuniq ) {
-  is $ppuniq[$i], undef,
-    "Found no extra elements in uniqnum output";
+
+my $diag;
+my $uniqnum;
+{
+  my $IMPL = 'List::Util::PP';
+  my $sub = 'uniqnum';
+  for my $arg (@ARGV) {
+    if ($arg eq '--xs') {
+      $IMPL = 'List::Util';
+    }
+    elsif ($arg eq '--pp') {
+      $IMPL = 'List::Util::PP';
+    }
+    elsif ($arg eq '--diag') {
+      $diag = 1;
+    }
+    else {
+      die "Invalid argument '$arg'!\n";
+    }
+  }
+  (my $f = "$IMPL.pm") =~ s{::}{/}g;
+  require $f;
+  $uniqnum = \&{"${IMPL}::${sub}"};
+  print "# Testing ${IMPL}::${sub}\n";
+}
+
+my $nvmantbits = $Config::Config{nvmantbits} || do {
+  my $nvsize = $Config::Config{nvsize} * 8;
+    $nvsize == 16  ? 11
+  : $nvsize == 32  ? 24
+  : $nvsize == 64  ? 53
+  : $nvsize == 80  ? 64
+  : $nvsize == 128 ? 113
+  : $nvsize == 256 ? 237
+                   : 237 # i dunno
+};
+my $precision = 2 + int( log(2)/log(10)*$nvmantbits );
+
+my @numbers = (
+  (map "$_", -20 .. 20),
+  "-0.0",
+  (map "'$_'", qw(00 01 .0 .1 0.0 0.00 00.00 0.10 0.101)),
+  "'0 but true'",
+  "'0e0'",
+  (map +("1e$_", "-1e$_"), -50, -5, 0, 1, 5, 50),
+  (map "1 / $_", -10 .. -2, 2 .. 10),
+  (map "+(1 / 9) * $_", -9 .. -1, 1 .. 9),
+  (map $_ x 100, 1 .. 9),
+  '3.14159265358979323846264338327950288419716939937510',
+  '2.71828182845904523536028747135266249775724709369995',
+  'sqrt(2)',
+  '1.4142135623730951',
+  '1.4142135623730954',
+  'sqrt(3)',
+  '1.7320508075688772935274463415058722',
+  '1.73205080756887729352744634150587224',
+  'sqrt(5)',
+  '2.2360679774997896963',
+  '2.23606797749978969634',
+  'MAXUINT',
+  'MAXUINT - 1',
+  'MAXINT',
+  'MAXINT + 1',
+  'MININT',
+  (INF_NAN_SUPPORT ? (
+    'INF', '-(INF)',
+    'NAN', '-(NAN)',
+  ) : ()),
+);
+
+my @all_numbers = map +(
+  "sprintf '%.".sprintf('%02d', $precision-3)."g', $_",
+  "sprintf '%.".sprintf('%02d', $precision-2)."g', $_",
+  "sprintf '%.".sprintf('%02d', $precision-1)."g', $_",
+  "                 $_",
+  "sprintf '%.".sprintf('%02d', $precision)."g', $_",
+  "sprintf '%.".sprintf('%02d', $precision+1)."g', $_",
+), @numbers;
+
+my @numinfo = map {;
+  use warnings FATAL => 'all';
+  my $number;
+  local $@;
+  eval "\$number = 0 + ($_); 1" ? [
+    $_,
+    $number,
+    sprintf('%f', $number),
+    eval { unpack 'H*', pack 'j', $number },
+    eval { unpack 'H*', pack 'J', $number },
+    eval { unpack 'H*', pack 'F', $number },
+  ] : [ $_ ];
+} @all_numbers;
+
+my $last_count_uniq = 0;
+my $it = iterate_uniqnum();
+for my $i (0 .. $#numinfo) {
+  SKIP: {
+    my @select = map $_->[1], @numinfo[0 .. $i];
+    my ($source, $number, $sprintf, $j, $J, $F) = @{$numinfo[$i]};
+    if (!defined $number) {
+      skip "NOT NUMERIC : $source", 1;
+    }
+
+    $_ ||= '' for $sprintf, $j, $J, $F;
+
+    my $want_uniq = $it->($number);
+
+    my @uniqnum = $uniqnum->(map $_->[1], @numinfo[0 .. $i]);
+    my $got_uniq = $last_count_uniq != @uniqnum;
+    $last_count_uniq = @uniqnum;
+
+    if ($want_uniq) {
+      ok $got_uniq,
+        "UNIQUE : $source";
+    }
+    else {
+      ok !$got_uniq,
+        "DUPE   : $source";
+    }
+
+    if ($diag) {
+      diag <<"END_DIAG";
+%f  : $sprintf
+j   : $j
+J   : $J
+F   : $F
+END_DIAG
+    }
+  }
 }
 
 done_testing;
