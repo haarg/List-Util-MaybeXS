@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 
 use Config ();
+use List::Util::PP qw(max);
 
 use constant MAXUINT => ~0;
 use constant MAXINT => ~0 >> 1;
@@ -68,7 +69,6 @@ sub iterate_uniqnum {
   }
 }
 
-my $diag;
 my $uniqnum;
 {
   my $IMPL = 'List::Util::PP';
@@ -79,9 +79,6 @@ my $uniqnum;
     }
     elsif ($arg eq '--pp') {
       $IMPL = 'List::Util::PP';
-    }
-    elsif ($arg eq '--diag') {
-      $diag = 1;
     }
     else {
       die "Invalid argument '$arg'!\n";
@@ -114,7 +111,7 @@ my @numbers = (
   (map +("1e$_", "-1e$_"), -50, -5, 0, 1, 5, 50),
   (map "1 / $_", -10 .. -2, 2 .. 10),
   (map "+(1 / 9) * $_", -9 .. -1, 1 .. 9),
-  (map $_ x 100, 1 .. 9),
+  (map "'$_' x 100", 1 .. 9),
   '3.14159265358979323846264338327950288419716939937510',
   '2.71828182845904523536028747135266249775724709369995',
   'sqrt(2)',
@@ -160,6 +157,8 @@ my @numinfo = map {;
   ] : [ $_ ];
 } @all_numbers;
 
+my $fail;
+
 my $last_count_uniq = 0;
 my $it = iterate_uniqnum();
 for my $i (0 .. $#numinfo) {
@@ -170,8 +169,6 @@ for my $i (0 .. $#numinfo) {
       skip "NOT NUMERIC : $source", 1;
     }
 
-    $_ ||= '' for $sprintf, $j, $J, $F;
-
     my $want_uniq = $it->($number);
 
     my @uniqnum = $uniqnum->(map $_->[1], @numinfo[0 .. $i]);
@@ -180,22 +177,45 @@ for my $i (0 .. $#numinfo) {
 
     if ($want_uniq) {
       ok $got_uniq,
-        "UNIQUE : $source";
+        "UNIQUE : $source"
+        or $fail++;
     }
     else {
       ok !$got_uniq,
-        "DUPE   : $source";
-    }
-
-    if ($diag) {
-      diag <<"END_DIAG";
-%f  : $sprintf
-j   : $j
-J   : $J
-F   : $F
-END_DIAG
+        "DUPE   : $source"
+        or $fail++;
     }
   }
+}
+
+if ($fail) {
+  diag table(
+    ['value', '%f', 'j', 'J', 'F'],
+    map [
+      $_->[0],
+      $_->[2] || '',
+      $_->[3] || '',
+      $_->[4] || '',
+      $_->[5] || '',
+    ], @numinfo
+  );
+}
+
+sub table {
+  my @rows = @_;
+  my @widths = map {;
+    my $col = $_;
+    max(map +length $rows[$_][$col], 0 .. $#rows);
+  } 0 .. $#{$rows[0]};
+
+  my $format = join(' | ', map "%-${_}s", @widths);
+  my $sep = join('-+-', map '-' x $_, @widths);
+
+  return join('',
+    sprintf("$format\n", @{shift @rows}),
+    sprintf("$sep\n"),
+    map sprintf("$format\n", @$_), @rows,
+  );
 }
 
 done_testing;
