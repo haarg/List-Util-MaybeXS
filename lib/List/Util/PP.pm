@@ -299,7 +299,7 @@ sub uniqnum (@) {
       my ($NV) = unpack 'F', pack 'F', $_;
       !$seen{
         $NV == 0 ? 0 : (
-          (!($NV != $NV)
+          ($NV == $NV
             ? do { local $@; eval { pack 'JF', $_, $_ } }
             : 0
           ) || sprintf('%f', $_)
