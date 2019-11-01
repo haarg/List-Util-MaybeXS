@@ -103,9 +103,9 @@ my $nvmantbits = $Config::Config{nvmantbits} || do {
 my $precision = 2 + int( log(2)/log(10)*$nvmantbits );
 
 my @numbers = (
-  (map "$_", -20 .. 20),
+  (-20 .. 20),
   "-0.0",
-  (map "'$_'", qw(00 01 .0 .1 0.0 0.00 00.00 0.10 0.101)),
+  (map "'$_'", qw(00 01 .0 .1 0.0 0.00 00.00 0.10 0.101 1.0)),
   "'0 but true'",
   "'0e0'",
   (map +("1e$_", "-1e$_"), -50, -5, 0, 1, 5, 50),
@@ -125,6 +125,8 @@ my @numbers = (
   '2.23606797749978969634',
   'MAXUINT',
   'MAXUINT - 1',
+  'MAXUINT + 1',
+  'MAXUINT + 2',
   'MAXINT',
   'MAXINT + 1',
   'MININT',
