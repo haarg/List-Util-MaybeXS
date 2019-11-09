@@ -5,6 +5,9 @@ use Test::More;
 use Config ();
 use List::Util::PP qw(max);
 
+my $nuisance = '';
+$nuisance = 1 if $Config::Config{ivsize} == $Config::Config{nvsize};
+
 use constant MAXUINT => ~0;
 use constant MAXINT => ~0 >> 1;
 use constant MININT => -(~0 >> 1) - 1;
@@ -60,8 +63,10 @@ sub iterate_uniqnum {
         }
       }
       elsif ($uj == $ij && $uJ == $iJ && $uF == $iF) {
-        $dupe = 1;
-        last;
+        unless( $nuisance && "$uniq" eq '18446744073709551615' && "$in" =~ /\./ ) { 
+          $dupe = 1;
+          last;
+        }
       }
     }
     push @uniq, $in;
