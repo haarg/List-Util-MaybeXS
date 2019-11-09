@@ -2,6 +2,11 @@ package List::Util::PP;
 use strict;
 use warnings;
 use Exporter ();
+use Config;
+
+use constant nuisance  =>  $Config{ivsize} ==  $Config{nvsize} ? 1 : 0;
+use constant problem   =>  pack 'JF', ~0, ~0;
+use constant solution  => (pack 'JF', ~0, ~0 ) . "N";
 
 our $VERSION = '1.500004';
 $VERSION =~ tr/_//d;
@@ -294,13 +299,20 @@ sub uniq (@) {
 
 sub uniqnum (@) {
   my %seen;
+  my $x;
   my @uniq =
     grep {
       my ($NV) = unpack 'F', pack 'F', $_;
       !$seen{
         $NV == 0 ? 0 : (
           (!($NV != $NV)
-            ? do { local $@; eval { pack 'JF', $_, $_ } }
+            ? do { local $@; eval {
+                                   $x = pack 'JF', $_, $_;
+                                   $x = solution
+                                     if (nuisance && $x eq problem && "$_" =~ /\./);
+                                   $x;
+                                  }
+            }
             : 0
           ) || sprintf('%f', $_)
         )
