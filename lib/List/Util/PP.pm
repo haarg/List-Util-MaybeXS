@@ -2,6 +2,7 @@ package List::Util::PP;
 use strict;
 use warnings;
 use Exporter ();
+use Config ();
 
 our $VERSION = '1.500004';
 $VERSION =~ tr/_//d;
@@ -292,22 +293,73 @@ sub uniq (@) {
   @uniq;
 }
 
+my $g_format = do {
+  my $nv_precision;
+
+  my $ivsize = $Config::Config{ivsize} * 8;
+  my $uv_precision = 1 + int(log(2) / log(10) * $ivsize);
+
+  my $nvsize = $Config::Config{nvsize} * 8;
+  # we want NV and UV numbers in the same range to format the same, so make sure
+  # NVs are given at least as many digits as UVs.  If IV/UVs have equal or
+  # greater bits, there's no reason to check NV size since it won't be able to
+  # have as much mantissa.
+  if ($ivsize >= $nvsize) {
+    $nv_precision = $uv_precision;
+  }
+  else {
+    # maximum possible digits that could fit in something NV size
+    my $max_digits = 1 + int(log(2) / log(10) * $nvsize);
+
+    my $float = sprintf '%0.'.$max_digits.'g', 1/9;
+    my ($fully_accurate_digits) = $float =~ /(1+)/;
+    # additional digit provides 'partial' accuracy
+    $nv_precision = 1 + length $fully_accurate_digits;
+
+    if ($nv_precision < $uv_precision) {
+      $nv_precision = $uv_precision;
+    }
+  }
+  '%0.'.$nv_precision.'g';
+};
+
 sub uniqnum (@) {
   my %seen;
   my @uniq =
     grep {
-      my ($NV) = unpack 'F', pack 'F', $_;
-      !$seen{
-        $NV == 0 ? 0 : (
-          ($NV == $NV
-            ? do { local $@; eval { pack 'JF', $_, $_ } }
-            : 0
-          ) || sprintf('%f', $_)
+      my $v = $_;
+
+      my $g = sprintf $g_format, $v;
+      my $u;
+      my $i;
+      my $vs;
+
+      my $k
+        # refs or objects
+        = ref $v                                      ? (sprintf '%u', $v)
+        # definitely floats
+        : $g =~ /[.e]/                                ? (
+          # sprintf was accurate
+          $v == $g  ? $g
+          # sprintf wasn't accurate? use raw bytes
+                    : pack('F', $v)
         )
-      }++;
+        # NaNs
+        : $v != $v                                    ? $g
+        # unsigned
+        : ($vs = "$v") eq ($u = sprintf '%u', $v)     ? $u
+        # signed
+        : ($vs       ) eq ($i = sprintf '%i', $v)     ? $i
+        # floats
+          # sprintf was accurate
+        : $v == $g                                    ? $g
+          # sprintf wasn't accurate? use raw bytes
+                                                      : pack('F', $v);
+
+      !$seen{$k}++;
     }
     map +(defined($_) ? $_
-      : do { warnings::warnif('uninitialized', 'Use of uninitialized value in subroutine entry'); 0 }),
+      : scalar ( warnings::warnif('uninitialized', 'Use of uninitialized value in subroutine entry'), 0 )),
     @_;
   @uniq;
 }
@@ -317,7 +369,7 @@ sub uniqstr (@) {
   my @uniq =
     grep !$seen{$_}++,
     map +(defined($_) ? $_
-      : do { warnings::warnif('uninitialized', 'Use of uninitialized value in subroutine entry'); '' }),
+      : scalar ( warnings::warnif('uninitialized', 'Use of uninitialized value in subroutine entry'), '' )),
     @_;
   @uniq;
 }
