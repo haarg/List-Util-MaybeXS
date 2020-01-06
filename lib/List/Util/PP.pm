@@ -10,7 +10,7 @@ our @EXPORT_OK = qw(
   first min max minstr maxstr reduce sum shuffle
   all any none notall product sum0 uniq uniqnum uniqstr
   pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
-  head tail
+  head tail slide
 );
 
 sub import {
@@ -334,6 +334,30 @@ sub tail ($@) {
   return @_
     if $size > @_;
   @_[ ( $size >= 0 ? ($#_ - ($size-1) ) : 0 - $size ) .. $#_ ];
+}
+
+sub slide (&@) {
+  my $f = shift;
+  unless ( length ref $f && eval { $f = \&$f; 1 } ) {
+    require Carp;
+    Carp::croak("Not a subroutine reference");
+  }
+  if (@_ < 2) {
+    require Carp;
+    Carp::croak("slide requires two or more parameters");
+  }
+
+  my $pkg = caller;
+  no strict 'refs';
+  my $glob_a = \*{"${pkg}::a"};
+  my $glob_b = \*{"${pkg}::b"};
+
+  return
+    map {
+      local (*$glob_a, *$glob_b) = \( @_[$_,$_+1] );
+      $f->();
+    }
+    0 .. $#_ - 1;
 }
 
 1;
