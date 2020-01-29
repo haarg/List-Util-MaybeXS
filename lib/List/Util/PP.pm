@@ -22,6 +22,14 @@ sub import {
   ${"${pkg}::a"} = ${"${pkg}::a"};
   ${"${pkg}::b"} = ${"${pkg}::b"};
 
+  # May be imported by List::Util if very old version is installed, which
+  # expects default exports
+  if ($pkg eq 'List::Util' && @_ < 2) {
+    package #hide from PAUSE
+      List::Util;
+    return __PACKAGE__->import(qw(first min max minstr maxstr reduce sum shuffle));
+  }
+
   goto &Exporter::import;
 }
 
