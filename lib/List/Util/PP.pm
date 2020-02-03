@@ -7,7 +7,7 @@ our $VERSION = '1.500004';
 $VERSION =~ tr/_//d;
 
 our @EXPORT_OK = qw(
-  first min max minstr maxstr reduce sum shuffle
+  first min max minstr maxstr reduce sum sample shuffle
   all any none notall product sum0 uniq uniqnum uniqstr
   pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
   head tail
@@ -110,13 +110,15 @@ sub maxstr (@) {
 }
 
 sub shuffle (@) {
-  my @a=\(@_);
-  my $n;
-  my $i=@_;
-  map {
-    $n = rand($i--);
-    (${$a[$n]}, $a[$n] = $a[$i])[0];
-  } @_;
+  sample(scalar @_, @_);
+}
+
+sub sample ($@) {
+  my $num = shift;
+  my @i = (0 .. $#_);
+  $num = @_ if $num > @_;
+  my @o = map +(splice @i, rand($#i), 1), 1 .. $num;
+  @_[@o];
 }
 
 sub all (&@) {
@@ -361,7 +363,7 @@ List::Util::PP - Pure-perl implementations of List::Util subroutines
 
       pairs pairkeys pairvalues pairfirst pairgrep pairmap
 
-      shuffle
+      shuffle sample
 
       head tail
     );
@@ -407,6 +409,8 @@ this module otherwise.
 =item L<sum0|List::Util/sum0>
 
 =item L<shuffle|List::Util/shuffle>
+
+=item L<sample|List::Util/sample>
 
 =item L<uniq|List::Util/uniq>
 

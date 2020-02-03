@@ -11,7 +11,7 @@ BEGIN {
   @EXPORT_OK = qw(
     all any first min max minstr maxstr none notall
     product reduce sum sum0
-    shuffle uniq uniqnum uniqstr
+    sample shuffle uniq uniqnum uniqstr
     pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
     head tail
   );
