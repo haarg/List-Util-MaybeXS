@@ -13,6 +13,12 @@ our @EXPORT_OK = qw(
   head tail
 );
 
+my $rand = do { our $RAND };
+*RAND = *List::Util::RAND;
+our $RAND;
+$RAND = $rand
+  if !defined $RAND;
+
 sub import {
   my $pkg = caller;
 
@@ -117,7 +123,8 @@ sub sample ($@) {
   my $num = shift;
   my @i = (0 .. $#_);
   $num = @_ if $num > @_;
-  my @o = map +(splice @i, rand($#i), 1), 1 .. $num;
+  my @o = defined $RAND ? (map +(splice @i, $RAND->($#i), 1), 1 .. $num)
+                        : (map +(splice @i,    rand($#i), 1), 1 .. $num);
   @_[@o];
 }
 
@@ -435,6 +442,18 @@ this module otherwise.
 =item L<head|List::Util/head>
 
 =item L<tail|List::Util/tail>
+
+=back
+
+=head1 CONFIGURATION VARIABLES
+
+=over 4
+
+=item L<$RAND|List::Util/$RAND>
+
+The variables C<$List::Util::RAND>, C<$List::Util::PP::RAND>, and
+C<$List::Util::MaybeXS::RAND> are all aliased to each other.  Any of them will
+impact both List::Util::PP and L<List::Util> functions.
 
 =back
 

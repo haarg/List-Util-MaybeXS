@@ -17,6 +17,13 @@ BEGIN {
   );
 }
 
+my $rand = do { our $RAND };
+*RAND                 = *List::Util::RAND;
+*List::Util::PP::RAND = *List::Util::RAND;
+our $RAND;
+$RAND = $rand
+  if !defined $RAND;
+
 BEGIN {
   my %need;
   @need{@EXPORT_OK} = ();
@@ -113,6 +120,18 @@ over using L<List::Util> directly.
 =item L<head|List::Util/head>
 
 =item L<tail|List::Util/tail>
+
+=back
+
+=head1 CONFIGURATION VARIABLES
+
+=over 4
+
+=item L<$RAND|List::Util/$RAND>
+
+The variables C<$List::Util::RAND>, C<$List::Util::PP::RAND>, and
+C<$List::Util::MaybeXS::RAND> are all aliased to each other.  Any of them will
+impact both L<List::Util::PP> and L<List::Util> functions.
 
 =back
 
