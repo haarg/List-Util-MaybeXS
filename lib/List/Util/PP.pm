@@ -7,7 +7,7 @@ our $VERSION = '1.500004';
 $VERSION =~ tr/_//d;
 
 our @EXPORT_OK = qw(
-  first min max minstr maxstr reduce sum sample shuffle
+  first min max minstr maxstr reduce reductions sum sample shuffle
   all any none notall product sum0 uniq uniqnum uniqstr
   pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
   head tail
@@ -61,6 +61,34 @@ sub reduce (&@) {
   }
 
   $a;
+}
+
+sub reductions (&@) {
+  my $f = shift;
+  unless ( length ref $f && eval { $f = \&$f; 1 } ) {
+    require Carp;
+    Carp::croak("Not a subroutine reference");
+  }
+
+  return unless @_;
+  return shift unless @_ > 1;
+
+  my $pkg = caller;
+  my $a = shift;
+
+  no strict 'refs';
+  local *{"${pkg}::a"} = \$a;
+  my $glob_b = \*{"${pkg}::b"};
+
+  my @o = $a;
+
+  foreach my $b (@_) {
+    local *$glob_b = \$b;
+    $a = $f->();
+    push @o, $a;
+  }
+
+  @o;
 }
 
 sub first (&@) {
@@ -410,6 +438,8 @@ this module otherwise.
 =item L<product|List::Util/product>
 
 =item L<reduce|List::Util/reduce>
+
+=item L<reductions|List::Util/reductions>
 
 =item L<sum|List::Util/sum>
 

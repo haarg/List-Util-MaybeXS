@@ -10,7 +10,7 @@ our @EXPORT_OK;
 BEGIN {
   @EXPORT_OK = qw(
     all any first min max minstr maxstr none notall
-    product reduce sum sum0
+    product reductions reduce sum sum0
     sample shuffle uniq uniqnum uniqstr
     pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
     head tail
@@ -90,6 +90,8 @@ over using L<List::Util> directly.
 =item L<product|List::Util/product>
 
 =item L<reduce|List::Util/reduce>
+
+=item L<reductions|List::Util/reductions>
 
 =item L<sum|List::Util/sum>
 
