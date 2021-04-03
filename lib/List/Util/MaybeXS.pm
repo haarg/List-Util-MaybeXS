@@ -14,6 +14,8 @@ BEGIN {
     sample shuffle uniq uniqnum uniqstr
     pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
     head tail
+    zip zip_longest zip_shortest
+    mesh mesh_longest mesh_shortest
   );
 }
 
@@ -52,7 +54,13 @@ List::Util::MaybeXS - L<List::Util> but with Pure Perl fallback
 =head1 SYNOPSIS
 
   use List::Util::MaybeXS qw(
-    any all
+    reduce any all none notall first reductions
+
+    max maxstr min minstr product sum sum0
+
+    pairs unpairs pairkeys pairvalues pairfirst pairgrep pairmap
+
+    shuffle uniq uniqint uniqnum uniqstr zip mesh
   );
 
 =head1 DESCRIPTION
@@ -122,6 +130,18 @@ over using L<List::Util> directly.
 =item L<head|List::Util/head>
 
 =item L<tail|List::Util/tail>
+
+=item L<zip|List::Util/zip>
+
+=item L<zip_longest|List::Util/zip>
+
+=item L<zip_shortest|List::Util/zip>
+
+=item L<mesh|List::Util/mesh>
+
+=item L<mesh_longest|List::Util/mesh>
+
+=item L<mesh_shortest|List::Util/mesh>
 
 =back
 

@@ -11,6 +11,8 @@ our @EXPORT_OK = qw(
   all any none notall product sum0 uniq uniqnum uniqstr
   pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
   head tail
+  zip zip_longest zip_shortest
+  mesh mesh_longest mesh_shortest
 );
 
 my $rand = do { our $RAND };
@@ -381,6 +383,38 @@ sub tail ($@) {
   @_[ ( $size >= 0 ? ($#_ - ($size-1) ) : 0 - $size ) .. $#_ ];
 }
 
+sub zip_longest {
+  map {
+    my $idx = $_;
+    [ map $_->[$idx], @_ ];
+  } ( 0 .. max(map $#$_, @_) || -1 )
+}
+
+sub zip_shortest {
+  map {
+    my $idx = $_;
+    [ map $_->[$idx], @_ ];
+  } ( 0 .. min(map $#$_, @_) || -1 )
+}
+
+*zip = \&zip_longest;
+
+sub mesh_longest {
+  map {
+    my $idx = $_;
+    map $_->[$idx], @_;
+  } ( 0 .. max(map $#$_, @_) || -1 )
+}
+
+sub mesh_shortest {
+  map {
+    my $idx = $_;
+    map $_->[$idx], @_;
+  } ( 0 .. min(map $#$_, @_) || -1 )
+}
+
+*mesh = \&mesh_longest;
+
 1;
 
 __END__
@@ -391,17 +425,15 @@ List::Util::PP - Pure-perl implementations of List::Util subroutines
 
 =head1 SYNOPSIS
 
-    use List::Util::PP qw(
-      reduce any all none notall first
+  use List::Util::PP qw(
+    reduce any all none notall first reductions
 
-      max maxstr min minstr product sum sum0
+    max maxstr min minstr product sum sum0
 
-      pairs pairkeys pairvalues pairfirst pairgrep pairmap
+    pairs unpairs pairkeys pairvalues pairfirst pairgrep pairmap
 
-      shuffle sample
-
-      head tail
-    );
+    shuffle uniq uniqint uniqnum uniqstr zip mesh
+  );
 
 =head1 DESCRIPTION
 
@@ -472,6 +504,18 @@ this module otherwise.
 =item L<head|List::Util/head>
 
 =item L<tail|List::Util/tail>
+
+=item L<zip|List::Util/zip>
+
+=item L<zip_longest|List::Util/zip>
+
+=item L<zip_shortest|List::Util/zip>
+
+=item L<mesh|List::Util/mesh>
+
+=item L<mesh_longest|List::Util/mesh>
+
+=item L<mesh_shortest|List::Util/mesh>
 
 =back
 
