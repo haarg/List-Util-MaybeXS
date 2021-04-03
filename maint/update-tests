@@ -33,9 +33,17 @@ for my $test (@tests) {
     $content =~ s/\s*\z/\n/;
 
     my $out = 't/'.basename($test);
-    open my $fh, '+<', $out
-      or die "Can't write $out, $!";
-    my $old_content = do { local $/; <$fh> };
+    my $fh;
+    my $old_content;
+    if (open $fh, '+<', $out) {
+      $old_content = do { local $/; <$fh> };
+    }
+    elsif (open $fh, '>', $out) {
+      $old_content = '';
+    }
+    else {
+      die "Can't write $out: $!";
+    }
     if ($content eq $old_content) {
       next;
     }
