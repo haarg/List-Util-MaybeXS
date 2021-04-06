@@ -11,7 +11,7 @@ BEGIN {
   @EXPORT_OK = qw(
     all any first min max minstr maxstr none notall
     product reductions reduce sum sum0
-    sample shuffle uniq uniqnum uniqstr
+    sample shuffle uniq uniqnum uniqint uniqstr
     pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
     head tail
     zip zip_longest zip_shortest
@@ -110,6 +110,8 @@ over using L<List::Util> directly.
 =item L<uniq|List::Util/uniq>
 
 =item L<uniqnum|List::Util/uniqnum>
+
+=item L<uniqint|List::Util/uniqint>
 
 =item L<uniqstr|List::Util/uniqstr>
 

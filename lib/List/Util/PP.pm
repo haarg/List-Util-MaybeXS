@@ -8,7 +8,7 @@ $VERSION =~ tr/_//d;
 
 our @EXPORT_OK = qw(
   first min max minstr maxstr reduce reductions sum sample shuffle
-  all any none notall product sum0 uniq uniqnum uniqstr
+  all any none notall product sum0 uniq uniqnum uniqint uniqstr
   pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
   head tail
   zip zip_longest zip_shortest
@@ -359,6 +359,25 @@ sub uniqnum (@) {
   @uniq;
 }
 
+sub uniqint (@) {
+  my %seen;
+  my @uniq =
+    map +(
+      ref $_ ? $_ : int($_)
+    ),
+    grep {
+      !$seen{
+        /\A[0-9]+\z/  ? $_
+        : $_ > 0      ? sprintf '%u', $_
+                      : sprintf '%d', $_
+      }++;
+    }
+    map +(defined($_) ? $_
+      : do { warnings::warnif('uninitialized', 'Use of uninitialized value in subroutine entry'); 0 }),
+    @_;
+  @uniq;
+}
+
 sub uniqstr (@) {
   my %seen;
   my @uniq =
@@ -484,6 +503,8 @@ this module otherwise.
 =item L<uniq|List::Util/uniq>
 
 =item L<uniqnum|List::Util/uniqnum>
+
+=item L<uniqint|List::Util/uniqint>
 
 =item L<uniqstr|List::Util/uniqstr>
 
