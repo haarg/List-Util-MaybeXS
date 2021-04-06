@@ -1,5 +1,8 @@
 Revision history for List-Util-MaybeXS
 
+  - added uniqint function, as added in List::Util 1.55
+  - added zip and mesh and related functions, as added in List::Util 1.56
+
 1.500004 - 2019-09-05
   - fixed uniqnum to be more accurate in on machines with unusual numeric
     formats
