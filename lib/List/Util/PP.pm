@@ -6,14 +6,20 @@ use Exporter ();
 our $VERSION = '1.500005';
 $VERSION =~ tr/_//d;
 
-our @EXPORT_OK = qw(
-  first min max minstr maxstr reduce reductions sum sample shuffle
-  all any none notall product sum0 uniq uniqnum uniqint uniqstr
-  pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
-  head tail
-  zip zip_longest zip_shortest
-  mesh mesh_longest mesh_shortest
-);
+our @EXPORT_OK;
+BEGIN {
+  @EXPORT_OK = qw(
+    all any first none notall
+    min max minstr maxstr
+    product reductions reduce sum sum0
+    sample shuffle
+    uniq uniqnum uniqint uniqstr
+    pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
+    head tail
+    zip zip_longest zip_shortest
+    mesh mesh_longest mesh_shortest
+  );
+}
 
 my $rand = do { our $RAND };
 *RAND = *List::Util::RAND;

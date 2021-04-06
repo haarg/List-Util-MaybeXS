@@ -9,9 +9,11 @@ $VERSION =~ tr/_//d;
 our @EXPORT_OK;
 BEGIN {
   @EXPORT_OK = qw(
-    all any first min max minstr maxstr none notall
+    all any first none notall
+    min max minstr maxstr
     product reductions reduce sum sum0
-    sample shuffle uniq uniqnum uniqint uniqstr
+    sample shuffle
+    uniq uniqnum uniqint uniqstr
     pairs unpairs pairkeys pairvalues pairmap pairgrep pairfirst
     head tail
     zip zip_longest zip_shortest
