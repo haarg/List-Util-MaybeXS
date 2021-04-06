@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Exporter ();
 
-our $VERSION = '1.500006';
+our $VERSION = '1.500_007';
 $VERSION =~ tr/_//d;
 
 our @EXPORT_OK;
