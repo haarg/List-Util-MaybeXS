@@ -1,5 +1,8 @@
 Revision history for List-Util-MaybeXS
 
+  - added missing change log entries for 1.500005
+  - added sample to List::Util::MaybeXS pod
+
 1.500005 - 2021-04-06
   - added reductions function, as added in List::Util 1.54
   - added sample function, as added in List::Util 1.54
