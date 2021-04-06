@@ -107,6 +107,8 @@ over using L<List::Util> directly.
 
 =item L<sum0|List::Util/sum0>
 
+=item L<sample|List::Util/sample>
+
 =item L<shuffle|List::Util/shuffle>
 
 =item L<uniq|List::Util/uniq>
