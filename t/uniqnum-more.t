@@ -69,19 +69,28 @@ sub iterate_uniqnum {
   }
 }
 
+my @forced;
 my $uniqnum;
 {
   my $IMPL = 'List::Util::PP';
   my $sub = 'uniqnum';
-  for my $arg (@ARGV) {
+  while (@ARGV) {
+    my $arg = shift @ARGV;
     if ($arg eq '--xs') {
       $IMPL = 'List::Util';
     }
     elsif ($arg eq '--pp') {
       $IMPL = 'List::Util::PP';
     }
-    else {
+    elsif ($arg eq '--') {
+      push @forced, @ARGV;
+      last;
+    }
+    elsif ($arg =~ /\A-/) {
       die "Invalid argument '$arg'!\n";
+    }
+    else {
+      push @forced, $arg;
     }
   }
   (my $f = "$IMPL.pm") =~ s{::}{/}g;
@@ -147,6 +156,9 @@ my @all_numbers = map +(
   "sprintf '%.".sprintf('%02d', $precision)."g', $_",
   "sprintf '%.".sprintf('%02d', $precision+1)."g', $_",
 ), @numbers;
+
+@all_numbers = @forced
+  if @forced;
 
 my @numinfo = map {;
   use warnings FATAL => 'all';
