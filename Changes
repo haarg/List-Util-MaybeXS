@@ -1,5 +1,6 @@
 Revision history for List-Util-MaybeXS
 
+1.500_007 - 2021-04-06
   - improved accuracy of uniqnum function
 
 1.500006 - 2021-04-06
