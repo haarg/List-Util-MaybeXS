@@ -171,9 +171,9 @@ sub all (&@) {
     Carp::croak("Not a subroutine reference");
   }
 
-  $f->() or return 0
+  $f->() or return !!0
     foreach @_;
-  return 1;
+  return !!1;
 }
 
 sub any (&@) {
@@ -183,9 +183,9 @@ sub any (&@) {
     Carp::croak("Not a subroutine reference");
   }
 
-  $f->() and return 1
+  $f->() and return !!1
     foreach @_;
-  return 0;
+  return !!0;
 }
 
 sub none (&@) {
@@ -195,9 +195,9 @@ sub none (&@) {
     Carp::croak("Not a subroutine reference");
   }
 
-  $f->() and return 0
+  $f->() and return !!0
     foreach @_;
-  return 1;
+  return !!1;
 }
 
 sub notall (&@) {
@@ -207,9 +207,9 @@ sub notall (&@) {
     Carp::croak("Not a subroutine reference");
   }
 
-  $f->() or return 1
+  $f->() or return !!1
     foreach @_;
-  return 0;
+  return !!0;
 }
 
 sub product (@) {
