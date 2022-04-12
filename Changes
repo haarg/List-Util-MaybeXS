@@ -1,5 +1,7 @@
 Revision history for List-Util-MaybeXS
 
+  - return real boolean values from all, any, none, notall
+
 1.500_007 - 2021-04-06
   - improved accuracy of uniqnum function
 
