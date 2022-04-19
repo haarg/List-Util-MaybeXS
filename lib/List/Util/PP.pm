@@ -360,7 +360,7 @@ sub uniqnum (@) {
           || overload::ov_method(overload::mycan($package, '""'), $package)
           || overload::ov_method(overload::mycan($package, 'bool'), $package)
         ) {
-          $nv = $nv->$method;
+          $nv = $nv->$method(undef, !!0);
         }
         elsif (
           my $nomethod = overload::ov_method(overload::mycan($package, '(nomethod'), $package)
