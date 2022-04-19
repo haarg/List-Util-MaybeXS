@@ -373,6 +373,8 @@ sub uniqnum (@) {
       }
       my $iv = $nv;
       my $F = pack 'F', $nv;
+      my $Fplus = pack 'F', $nv + 1;
+      my $Fminus = pack 'F', $nv - 1;
       my ($NV) = unpack 'F', $F;
       !$seen{
           ref $nv         ? $$nv
@@ -380,6 +382,7 @@ sub uniqnum (@) {
         : $NV != $NV      ? sprintf('%f', $NV)
         : int($NV) != $NV ? 'N'.$F
         : $iv - 1 == $iv  ? sprintf('%.0f', $NV)
+        : $F ne $Fplus && $F ne $Fminus ? sprintf('%.0f', $NV)
         : $NV > 0         ? sprintf('%u', $iv)
                           : sprintf('%d', $iv)
       }++;
