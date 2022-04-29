@@ -382,7 +382,7 @@ sub uniqnum (@) {
       elsif ($nv == 0) {
         $k = '0';
       }
-      elsif ($nv != $nv || $nv == 9**9**9) {
+      elsif ($nv*0 != $nv*0) {
         $k = sprintf '%f', $nv;
       }
       elsif (int($nv) != $nv) {
