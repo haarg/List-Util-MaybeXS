@@ -159,8 +159,8 @@ sub sample ($@) {
   my $num = shift;
   my @i = (0 .. $#_);
   $num = @_ if $num > @_;
-  my @o = defined $RAND ? (map +(splice @i, $RAND->($#i), 1), 1 .. $num)
-                        : (map +(splice @i,    rand($#i), 1), 1 .. $num);
+  my @o = defined $RAND ? (map +(splice @i, $RAND->(scalar @i), 1), 1 .. $num)
+                        : (map +(splice @i,    rand(scalar @i), 1), 1 .. $num);
   @_[@o];
 }
 
