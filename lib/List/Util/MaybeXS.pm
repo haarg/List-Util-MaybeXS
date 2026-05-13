@@ -189,7 +189,7 @@ Graham Barr <gbarr@pobox.com>
 
 =head1 CONTRIBUTORS
 
-None so far.
+Chris Novakovic <chris@chrisn.me.uk>
 
 =head1 COPYRIGHT
 
