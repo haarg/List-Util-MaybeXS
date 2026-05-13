@@ -456,33 +456,37 @@ sub tail ($@) {
 }
 
 sub zip_longest {
+  my $max = max(map $#$_, @_);
   map {
     my $idx = $_;
     [ map $_->[$idx], @_ ];
-  } ( 0 .. max(map $#$_, @_) || -1 )
+  } ( 0 .. ( defined $max && $max >= 0 ? $max : -1 ) )
 }
 
 sub zip_shortest {
+  my $min = min(map $#$_, @_);
   map {
     my $idx = $_;
     [ map $_->[$idx], @_ ];
-  } ( 0 .. min(map $#$_, @_) || -1 )
+  } ( 0 .. ( defined $min && $min >= 0 ? $min : -1 ) )
 }
 
 *zip = \&zip_longest;
 
 sub mesh_longest {
+  my $max = max(map $#$_, @_);
   map {
     my $idx = $_;
     map $_->[$idx], @_;
-  } ( 0 .. max(map $#$_, @_) || -1 )
+  } ( 0 .. ( defined $max && $max >= 0 ? $max : -1 ) )
 }
 
 sub mesh_shortest {
+  my $min = min(map $#$_, @_);
   map {
     my $idx = $_;
     map $_->[$idx], @_;
-  } ( 0 .. min(map $#$_, @_) || -1 )
+  } ( 0 .. ( defined $min && $min >= 0 ? $min : -1 ) )
 }
 
 *mesh = \&mesh_longest;
